@@ -37,6 +37,8 @@ class DashboardController extends Controller
         }
 
         $stats['todays_jobs'] = (clone $jobQuery)->where('scheduled_date', today())->count();
+        $stats['completed_today'] = (clone $jobQuery)->where('status', 'completed')
+            ->whereDate('completed_at', today())->count();
 
         return response()->json(['stats' => $stats]);
     }

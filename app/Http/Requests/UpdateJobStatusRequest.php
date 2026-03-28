@@ -19,7 +19,7 @@ class UpdateJobStatusRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'status' => ['required', 'in:pending,assigned,in_progress,completed,cancelled'],
+            'status' => ['required', 'in:pending,assigned,on_the_way,in_progress,completed,cancelled'],
             'technician_notes' => ['nullable', 'string', 'max:2000'],
         ];
     }

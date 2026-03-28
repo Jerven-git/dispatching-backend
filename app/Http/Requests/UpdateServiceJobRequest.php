@@ -16,8 +16,7 @@ class UpdateServiceJobRequest extends FormRequest
         return [
             'customer_id' => ['sometimes', 'exists:customers,id'],
             'service_id' => ['sometimes', 'exists:services,id'],
-            'technician_id' => ['nullable', 'exists:users,id'],
-            'status' => ['sometimes', 'in:pending,assigned,in_progress,completed,cancelled'],
+            'status' => ['sometimes', 'in:pending,assigned,on_the_way,in_progress,completed,cancelled'],
             'priority' => ['sometimes', 'in:low,medium,high,urgent'],
             'description' => ['nullable', 'string', 'max:2000'],
             'address' => ['sometimes', 'string', 'max:500'],

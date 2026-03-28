@@ -24,10 +24,12 @@ class ServiceJobResource extends JsonResource
             'scheduled_time' => $this->scheduled_time,
             'started_at' => $this->started_at,
             'completed_at' => $this->completed_at,
+            'cancelled_at' => $this->cancelled_at,
             'technician_notes' => $this->technician_notes,
             'total_cost' => $this->total_cost,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
+            'status_logs' => JobStatusLogResource::collection($this->whenLoaded('statusLogs')),
         ];
     }
 }

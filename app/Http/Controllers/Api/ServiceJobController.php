@@ -138,6 +138,25 @@ class ServiceJobController extends Controller
         ]);
     }
 
+    public function showMyJob(Request $request, ServiceJob $serviceJob): JsonResponse
+    {
+        if ($serviceJob->technician_id !== $request->user()->id) {
+            return response()->json(['message' => 'This job is not assigned to you.'], 403);
+        }
+
+        $serviceJob->load([
+            'customer',
+            'service',
+            'technician',
+            'creator',
+            'statusLogs.changedByUser',
+        ]);
+
+        return response()->json([
+            'job' => new ServiceJobResource($serviceJob),
+        ]);
+    }
+
     public function myJobs(Request $request): JsonResponse
     {
         $query = ServiceJob::with(['customer', 'service', 'technician', 'creator'])

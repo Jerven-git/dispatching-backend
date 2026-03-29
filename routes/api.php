@@ -31,6 +31,10 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/technicians/workloads', [ServiceJobController::class, 'technicianWorkloads']);
         Route::get('/users/technicians', [UserController::class, 'technicians']);
 
+        // Services (read-only for dispatchers)
+        Route::get('/services', [ServiceController::class, 'index']);
+        Route::get('/services/{service}', [ServiceController::class, 'show']);
+
         // Reports
         Route::get('/reports/summary', [ReportController::class, 'summary']);
         Route::get('/reports/jobs-by-status', [ReportController::class, 'jobsByStatus']);
@@ -40,7 +44,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Admin-only routes
     Route::middleware('role:admin')->group(function () {
-        Route::apiResource('services', ServiceController::class);
+        Route::apiResource('services', ServiceController::class)->except(['index', 'show']);
         Route::delete('/service-jobs/{service_job}', [ServiceJobController::class, 'destroy']);
         Route::get('/users', [UserController::class, 'index']);
         Route::post('/users', [UserController::class, 'store']);
@@ -52,6 +56,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // Technician routes
     Route::middleware('role:technician')->group(function () {
         Route::get('/my-jobs', [ServiceJobController::class, 'myJobs']);
+        Route::get('/service-jobs/{service_job}', [ServiceJobController::class, 'showMyJob']);
         Route::patch('/my-jobs/{service_job}/status', [ServiceJobController::class, 'updateMyJobStatus']);
     });
 });

@@ -38,7 +38,7 @@ describe('Role-based route protection', function () {
         $this->actingAs($this->dispatcher);
 
         $this->getJson('/api/users')->assertForbidden();
-        $this->getJson('/api/services')->assertForbidden();
+        $this->postJson('/api/services', [])->assertForbidden();
     });
 
     it('allows admin access to all routes', function () {
@@ -57,6 +57,7 @@ describe('Role-based route protection', function () {
         $this->getJson('/api/dashboard')->assertOk();
         $this->getJson('/api/customers')->assertOk();
         $this->getJson('/api/service-jobs')->assertOk();
+        $this->getJson('/api/services')->assertOk();
     });
 
     it('allows technician access to my-jobs', function () {

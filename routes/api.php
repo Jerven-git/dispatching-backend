@@ -56,7 +56,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // Technician routes
     Route::middleware('role:technician')->group(function () {
         Route::get('/my-jobs', [ServiceJobController::class, 'myJobs']);
-        Route::get('/service-jobs/{service_job}', [ServiceJobController::class, 'showMyJob']);
+        Route::get('/my-jobs/{service_job}', [ServiceJobController::class, 'showMyJob']);
         Route::patch('/my-jobs/{service_job}/status', [ServiceJobController::class, 'updateMyJobStatus']);
     });
 });

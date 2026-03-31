@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests;
 
+use App\Models\ServiceJob;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Validator;
 
 class StoreServiceJobRequest extends FormRequest
 {
@@ -23,6 +25,39 @@ class StoreServiceJobRequest extends FormRequest
             'scheduled_date' => ['required', 'date', 'after_or_equal:today'],
             'scheduled_time' => ['nullable', 'date_format:H:i'],
             'total_cost' => ['nullable', 'numeric', 'min:0'],
+            'recurring_frequency' => ['sometimes', 'in:none,daily,weekly,biweekly,monthly'],
+            'recurring_end_date' => ['nullable', 'date', 'after:scheduled_date'],
+            'force' => ['nullable', 'boolean'],
+        ];
+    }
+
+    public function after(): array
+    {
+        return [
+            function (Validator $validator) {
+                if ($validator->errors()->any() || $this->boolean('force')) {
+                    return;
+                }
+
+                $technicianId = $this->input('technician_id');
+                $date = $this->input('scheduled_date');
+
+                if (! $technicianId || ! $date) {
+                    return;
+                }
+
+                $conflict = ServiceJob::where('technician_id', $technicianId)
+                    ->where('scheduled_date', $date)
+                    ->whereNotIn('status', ['completed', 'cancelled'])
+                    ->exists();
+
+                if ($conflict) {
+                    $validator->errors()->add(
+                        'technician_id',
+                        'This technician already has a job scheduled on this date. Submit again with force to override.'
+                    );
+                }
+            },
         ];
     }
 }

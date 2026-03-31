@@ -3,6 +3,8 @@
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CustomerController;
 use App\Http\Controllers\Api\DashboardController;
+use App\Http\Controllers\Api\JobEnhancementController;
+use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\ReportController;
 use App\Http\Controllers\Api\ServiceController;
 use App\Http\Controllers\Api\ServiceJobController;
@@ -22,12 +24,33 @@ Route::middleware('auth:sanctum')->group(function () {
     // Dashboard (all roles, scoped in controller)
     Route::get('/dashboard', [DashboardController::class, 'index']);
 
+    // Job enhancements (all roles — authorization handled in controller)
+    Route::prefix('service-jobs/{service_job}')->group(function () {
+        Route::get('/attachments', [JobEnhancementController::class, 'attachments']);
+        Route::post('/attachments', [JobEnhancementController::class, 'uploadAttachment']);
+        Route::delete('/attachments/{attachment}', [JobEnhancementController::class, 'deleteAttachment']);
+        Route::get('/checklist', [JobEnhancementController::class, 'checklist']);
+        Route::patch('/checklist/{checklist_item}/toggle', [JobEnhancementController::class, 'toggleChecklistItem']);
+        Route::post('/signature', [JobEnhancementController::class, 'storeSignature']);
+        Route::get('/comments', [JobEnhancementController::class, 'comments']);
+        Route::post('/comments', [JobEnhancementController::class, 'storeComment']);
+        Route::delete('/comments/{comment}', [JobEnhancementController::class, 'deleteComment']);
+    });
+
+    // Notifications (all roles)
+    Route::get('/notifications', [NotificationController::class, 'index']);
+    Route::get('/notifications/unread-count', [NotificationController::class, 'unreadCount']);
+    Route::patch('/notifications/{id}/read', [NotificationController::class, 'markAsRead']);
+    Route::post('/notifications/mark-all-read', [NotificationController::class, 'markAllAsRead']);
+
     // Admin & Dispatcher routes
     Route::middleware('role:admin,dispatcher')->group(function () {
         Route::apiResource('customers', CustomerController::class);
+        Route::get('/service-jobs/calendar', [ServiceJobController::class, 'calendar']);
         Route::apiResource('service-jobs', ServiceJobController::class)->except(['destroy']);
         Route::patch('/service-jobs/{service_job}/status', [ServiceJobController::class, 'updateStatus']);
         Route::patch('/service-jobs/{service_job}/assign', [ServiceJobController::class, 'assignTechnician']);
+        Route::post('/service-jobs/{service_job}/clone', [JobEnhancementController::class, 'cloneJob']);
         Route::get('/technicians/workloads', [ServiceJobController::class, 'technicianWorkloads']);
         Route::get('/users/technicians', [UserController::class, 'technicians']);
 
@@ -45,6 +68,9 @@ Route::middleware('auth:sanctum')->group(function () {
     // Admin-only routes
     Route::middleware('role:admin')->group(function () {
         Route::apiResource('services', ServiceController::class)->except(['index', 'show']);
+        Route::get('/services/{service}/checklist', [JobEnhancementController::class, 'checklistItems']);
+        Route::post('/services/{service}/checklist', [JobEnhancementController::class, 'storeChecklistItem']);
+        Route::delete('/services/{service}/checklist/{checklist_item}', [JobEnhancementController::class, 'deleteChecklistItem']);
         Route::delete('/service-jobs/{service_job}', [ServiceJobController::class, 'destroy']);
         Route::get('/users', [UserController::class, 'index']);
         Route::post('/users', [UserController::class, 'store']);

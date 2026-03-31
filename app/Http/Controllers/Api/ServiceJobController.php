@@ -23,6 +23,24 @@ class ServiceJobController extends Controller
         private StatusTransitionService $transitionService,
     ) {}
 
+    public function calendar(Request $request): JsonResponse
+    {
+        $request->validate([
+            'from' => ['required', 'date'],
+            'to' => ['required', 'date'],
+        ]);
+
+        $jobs = ServiceJob::with(['customer:id,name', 'service:id,name', 'technician:id,name'])
+            ->whereBetween('scheduled_date', [$request->from, $request->to])
+            ->whereNotIn('status', ['cancelled'])
+            ->select('id', 'reference_number', 'customer_id', 'service_id', 'technician_id', 'status', 'priority', 'address', 'scheduled_date', 'scheduled_time')
+            ->orderBy('scheduled_date')
+            ->orderBy('scheduled_time')
+            ->get();
+
+        return response()->json(['jobs' => $jobs]);
+    }
+
     public function index(Request $request): JsonResponse
     {
         $query = ServiceJob::with(['customer', 'service', 'technician', 'creator']);

@@ -18,6 +18,7 @@ return new class extends Migration
             $table->enum('status', [
                 'pending',
                 'assigned',
+                'on_the_way',
                 'in_progress',
                 'completed',
                 'cancelled',
@@ -29,12 +30,18 @@ return new class extends Migration
             $table->time('scheduled_time')->nullable();
             $table->timestamp('started_at')->nullable();
             $table->timestamp('completed_at')->nullable();
+            $table->timestamp('cancelled_at')->nullable();
             $table->text('technician_notes')->nullable();
             $table->decimal('total_cost', 10, 2)->nullable();
+            $table->enum('recurring_frequency', ['none', 'daily', 'weekly', 'biweekly', 'monthly'])->default('none');
+            $table->date('recurring_end_date')->nullable();
+            $table->unsignedBigInteger('parent_job_id')->nullable();
             $table->timestamps();
 
+            $table->foreign('parent_job_id')->references('id')->on('service_jobs')->nullOnDelete();
             $table->index('status');
             $table->index('scheduled_date');
+            $table->index('recurring_frequency');
         });
     }
 

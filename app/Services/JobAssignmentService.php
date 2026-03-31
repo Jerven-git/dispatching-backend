@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Events\TechnicianAssigned;
 use App\Models\ServiceJob;
 use App\Models\User;
 use Illuminate\Support\Collection;
@@ -9,6 +10,7 @@ use Illuminate\Support\Facades\DB;
 
 class JobAssignmentService
 {
+
     public function assign(ServiceJob $job, ?int $technicianId): ServiceJob
     {
         $data = ['technician_id' => $technicianId];
@@ -23,6 +25,10 @@ class JobAssignmentService
 
         $job->update($data);
         $job->load(['customer', 'service', 'technician', 'creator']);
+
+        if ($technicianId) {
+            TechnicianAssigned::dispatch($job);
+        }
 
         return $job;
     }

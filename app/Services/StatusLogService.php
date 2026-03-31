@@ -2,8 +2,10 @@
 
 namespace App\Services;
 
+use App\Events\JobStatusChanged;
 use App\Models\JobStatusLog;
 use App\Models\ServiceJob;
+use App\Models\User;
 
 class StatusLogService
 {
@@ -45,6 +47,11 @@ class StatusLogService
         $job->update($data);
 
         $this->log($job, $oldStatus, $newStatus, $changedBy, $remarks);
+
+        $changedByUser = User::find($changedBy);
+        if ($changedByUser) {
+            JobStatusChanged::dispatch($job, $oldStatus, $newStatus, $changedByUser);
+        }
 
         return $job;
     }

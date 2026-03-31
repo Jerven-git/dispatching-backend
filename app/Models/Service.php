@@ -24,4 +24,9 @@ class Service extends Model
     {
         return $this->hasMany(ServiceJob::class);
     }
+
+    public function checklistItems(): HasMany
+    {
+        return $this->hasMany(ChecklistItem::class)->orderBy('sort_order');
+    }
 }

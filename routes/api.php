@@ -9,9 +9,12 @@ use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\Portal\CustomerAuthController;
 use App\Http\Controllers\Api\Portal\CustomerPortalController;
 use App\Http\Controllers\Api\ReportController;
+use App\Http\Controllers\Api\RouteController;
 use App\Http\Controllers\Api\ServiceController;
 use App\Http\Controllers\Api\ServiceJobController;
 use App\Http\Controllers\Api\ServiceRequestController;
+use App\Http\Controllers\Api\SyncController;
+use App\Http\Controllers\Api\TechnicianLocationController;
 use App\Http\Controllers\Api\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -82,6 +85,12 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/reports/jobs-by-status', [ReportController::class, 'jobsByStatus']);
         Route::get('/reports/jobs-by-date', [ReportController::class, 'jobsByDate']);
         Route::get('/reports/technician-performance', [ReportController::class, 'technicianPerformance']);
+
+        // Field Operations — GPS & Routing
+        Route::get('/technicians/locations', [TechnicianLocationController::class, 'index']);
+        Route::get('/technicians/{technician}/location', [TechnicianLocationController::class, 'show']);
+        Route::get('/technicians/{technician}/route', [RouteController::class, 'show']);
+        Route::get('/service-jobs/{service_job}/eta', [ServiceJobController::class, 'eta']);
     });
 
     // Admin-only routes
@@ -103,6 +112,12 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/my-jobs', [ServiceJobController::class, 'myJobs']);
         Route::get('/my-jobs/{service_job}', [ServiceJobController::class, 'showMyJob']);
         Route::patch('/my-jobs/{service_job}/status', [ServiceJobController::class, 'updateMyJobStatus']);
+
+        // Field Operations
+        Route::post('/my-location', [TechnicianLocationController::class, 'store']);
+        Route::get('/my-route', [RouteController::class, 'myRoute']);
+        Route::get('/my-jobs/{service_job}/eta', [ServiceJobController::class, 'eta']);
+        Route::post('/sync', [SyncController::class, 'sync']);
     });
 });
 
@@ -118,6 +133,7 @@ Route::prefix('portal')->group(function () {
         // My Jobs
         Route::get('/jobs', [CustomerPortalController::class, 'myJobs']);
         Route::get('/jobs/{job}', [CustomerPortalController::class, 'showJob']);
+        Route::get('/jobs/{job}/eta', [CustomerPortalController::class, 'jobEta']);
 
         // My Invoices
         Route::get('/invoices', [CustomerPortalController::class, 'myInvoices']);

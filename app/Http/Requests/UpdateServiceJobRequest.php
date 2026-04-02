@@ -23,6 +23,8 @@ class UpdateServiceJobRequest extends FormRequest
             'scheduled_date' => ['sometimes', 'date'],
             'scheduled_time' => ['nullable', 'date_format:H:i'],
             'total_cost' => ['nullable', 'numeric', 'min:0'],
+            'latitude' => ['nullable', 'numeric', 'between:-90,90'],
+            'longitude' => ['nullable', 'numeric', 'between:-180,180'],
         ];
     }
 }

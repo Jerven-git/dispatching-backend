@@ -9,11 +9,16 @@ use App\Models\Invoice;
 use App\Models\JobReview;
 use App\Models\Service;
 use App\Models\ServiceRequest;
+use App\Services\ETAService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class CustomerPortalController extends Controller
 {
+    public function __construct(
+        private ETAService $etaService,
+    ) {}
+
     // ── My Jobs ──────────────────────────────────────────────────
 
     public function myJobs(Request $request): JsonResponse
@@ -40,6 +45,16 @@ class CustomerPortalController extends Controller
         return response()->json([
             'job' => new ServiceJobResource($job),
         ]);
+    }
+
+    public function jobEta(Request $request, int $jobId): JsonResponse
+    {
+        $customer = $request->user('customer');
+        $job = $customer->serviceJobs()->findOrFail($jobId);
+
+        $eta = $this->etaService->calculateETA($job);
+
+        return response()->json(['eta' => $eta]);
     }
 
     // ── My Invoices ─────────────────────────────────────────────

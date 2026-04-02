@@ -31,6 +31,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
     'signature_path',
     'signed_by_name',
     'signed_at',
+    'latitude',
+    'longitude',
 ])]
 class ServiceJob extends Model
 {
@@ -46,6 +48,8 @@ class ServiceJob extends Model
             'total_cost' => 'decimal:2',
             'recurring_end_date' => 'date',
             'signed_at' => 'datetime',
+            'latitude' => 'decimal:7',
+            'longitude' => 'decimal:7',
         ];
     }
 

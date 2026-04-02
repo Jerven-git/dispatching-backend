@@ -9,6 +9,7 @@ use App\Http\Requests\UpdateJobStatusRequest;
 use App\Http\Requests\UpdateServiceJobRequest;
 use App\Http\Resources\ServiceJobResource;
 use App\Models\ServiceJob;
+use App\Services\ETAService;
 use App\Services\JobAssignmentService;
 use App\Services\StatusLogService;
 use App\Services\StatusTransitionService;
@@ -21,6 +22,7 @@ class ServiceJobController extends Controller
         private JobAssignmentService $assignmentService,
         private StatusLogService $statusLogService,
         private StatusTransitionService $transitionService,
+        private ETAService $etaService,
     ) {}
 
     public function calendar(Request $request): JsonResponse
@@ -249,6 +251,13 @@ class ServiceJobController extends Controller
         return response()->json([
             'technicians' => $workloads,
         ]);
+    }
+
+    public function eta(ServiceJob $serviceJob): JsonResponse
+    {
+        $eta = $this->etaService->calculateETA($serviceJob);
+
+        return response()->json(['eta' => $eta]);
     }
 
     public function destroy(ServiceJob $serviceJob): JsonResponse

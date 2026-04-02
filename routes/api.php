@@ -6,9 +6,12 @@ use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\InvoiceController;
 use App\Http\Controllers\Api\JobEnhancementController;
 use App\Http\Controllers\Api\NotificationController;
+use App\Http\Controllers\Api\Portal\CustomerAuthController;
+use App\Http\Controllers\Api\Portal\CustomerPortalController;
 use App\Http\Controllers\Api\ReportController;
 use App\Http\Controllers\Api\ServiceController;
 use App\Http\Controllers\Api\ServiceJobController;
+use App\Http\Controllers\Api\ServiceRequestController;
 use App\Http\Controllers\Api\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -69,6 +72,11 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/invoices/{invoice}/pdf', [InvoiceController::class, 'downloadPdf']);
         Route::delete('/invoices/{invoice}', [InvoiceController::class, 'destroy']);
 
+        // Service Requests (from customer portal)
+        Route::get('/service-requests', [ServiceRequestController::class, 'index']);
+        Route::post('/service-requests/{service_request}/approve', [ServiceRequestController::class, 'approve']);
+        Route::post('/service-requests/{service_request}/decline', [ServiceRequestController::class, 'decline']);
+
         // Reports
         Route::get('/reports/summary', [ReportController::class, 'summary']);
         Route::get('/reports/jobs-by-status', [ReportController::class, 'jobsByStatus']);
@@ -95,5 +103,34 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/my-jobs', [ServiceJobController::class, 'myJobs']);
         Route::get('/my-jobs/{service_job}', [ServiceJobController::class, 'showMyJob']);
         Route::patch('/my-jobs/{service_job}/status', [ServiceJobController::class, 'updateMyJobStatus']);
+    });
+});
+
+// ── Customer Portal ─────────────────────────────────────────────
+Route::prefix('portal')->group(function () {
+    Route::post('/login', [CustomerAuthController::class, 'login'])
+        ->middleware('throttle:5,1');
+
+    Route::middleware('auth:customer')->group(function () {
+        Route::get('/me', [CustomerAuthController::class, 'me']);
+        Route::post('/logout', [CustomerAuthController::class, 'logout']);
+
+        // My Jobs
+        Route::get('/jobs', [CustomerPortalController::class, 'myJobs']);
+        Route::get('/jobs/{job}', [CustomerPortalController::class, 'showJob']);
+
+        // My Invoices
+        Route::get('/invoices', [CustomerPortalController::class, 'myInvoices']);
+        Route::get('/invoices/{invoice}', [CustomerPortalController::class, 'showInvoice']);
+        Route::get('/invoices/{invoice}/pdf', [CustomerPortalController::class, 'downloadInvoice']);
+
+        // Request Service
+        Route::get('/services', [CustomerPortalController::class, 'availableServices']);
+        Route::post('/service-requests', [CustomerPortalController::class, 'submitRequest']);
+        Route::get('/service-requests', [CustomerPortalController::class, 'myRequests']);
+
+        // Reviews
+        Route::post('/jobs/{job}/review', [CustomerPortalController::class, 'submitReview']);
+        Route::get('/reviews', [CustomerPortalController::class, 'myReviews']);
     });
 });

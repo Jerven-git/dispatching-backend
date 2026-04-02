@@ -48,13 +48,6 @@ return new class extends Migration
             $table->unique(['service_job_id', 'checklist_item_id']);
         });
 
-        // Customer signature on job completion
-        Schema::table('service_jobs', function (Blueprint $table) {
-            $table->string('signature_path')->nullable()->after('technician_notes');
-            $table->string('signed_by_name')->nullable()->after('signature_path');
-            $table->timestamp('signed_at')->nullable()->after('signed_by_name');
-        });
-
         // Job comments thread
         Schema::create('job_comments', function (Blueprint $table) {
             $table->id();
@@ -72,9 +65,6 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('job_comments');
-        Schema::table('service_jobs', function (Blueprint $table) {
-            $table->dropColumn(['signature_path', 'signed_by_name', 'signed_at']);
-        });
         Schema::dropIfExists('job_checklist_entries');
         Schema::dropIfExists('checklist_items');
         Schema::dropIfExists('job_attachments');

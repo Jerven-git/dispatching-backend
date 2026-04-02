@@ -18,7 +18,11 @@ return new class extends Migration
             $table->string('state')->nullable();
             $table->string('zip_code')->nullable();
             $table->text('notes')->nullable();
+            $table->string('password')->nullable();
+            $table->boolean('portal_access')->default(false);
+            $table->rememberToken();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

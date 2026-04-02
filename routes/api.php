@@ -8,10 +8,13 @@ use App\Http\Controllers\Api\JobEnhancementController;
 use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\Portal\CustomerAuthController;
 use App\Http\Controllers\Api\Portal\CustomerPortalController;
+use App\Http\Controllers\Api\AnalyticsController;
+use App\Http\Controllers\Api\ExportController;
 use App\Http\Controllers\Api\JobPartController;
 use App\Http\Controllers\Api\PartController;
 use App\Http\Controllers\Api\ReportController;
 use App\Http\Controllers\Api\RouteController;
+use App\Http\Controllers\Api\ScheduledReportController;
 use App\Http\Controllers\Api\ServiceController;
 use App\Http\Controllers\Api\ServiceJobController;
 use App\Http\Controllers\Api\ServiceRequestController;
@@ -94,6 +97,19 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/reports/jobs-by-date', [ReportController::class, 'jobsByDate']);
         Route::get('/reports/technician-performance', [ReportController::class, 'technicianPerformance']);
 
+        // Analytics
+        Route::get('/analytics/revenue-trend', [AnalyticsController::class, 'revenueTrend']);
+        Route::get('/analytics/job-trend', [AnalyticsController::class, 'jobTrend']);
+        Route::get('/analytics/service-popularity', [AnalyticsController::class, 'servicePopularity']);
+        Route::get('/analytics/customer-lifetime-value', [AnalyticsController::class, 'customerLifetimeValue']);
+        Route::get('/analytics/job-profitability', [AnalyticsController::class, 'jobProfitability']);
+
+        // CSV Exports
+        Route::get('/export/jobs', [ExportController::class, 'jobs']);
+        Route::get('/export/invoices', [ExportController::class, 'invoices']);
+        Route::get('/export/customers', [ExportController::class, 'customers']);
+        Route::get('/export/technician-performance', [ExportController::class, 'technicianPerformance']);
+
         // Inventory & Parts
         Route::get('/parts', [PartController::class, 'index']);
         Route::get('/parts/low-stock', [PartController::class, 'lowStock']);
@@ -113,6 +129,13 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/parts/{part}', [PartController::class, 'update']);
         Route::delete('/parts/{part}', [PartController::class, 'destroy']);
         Route::post('/parts/{part}/adjust-stock', [PartController::class, 'adjustStock']);
+
+        // Scheduled Reports
+        Route::get('/scheduled-reports', [ScheduledReportController::class, 'index']);
+        Route::post('/scheduled-reports', [ScheduledReportController::class, 'store']);
+        Route::get('/scheduled-reports/{scheduled_report}', [ScheduledReportController::class, 'show']);
+        Route::put('/scheduled-reports/{scheduled_report}', [ScheduledReportController::class, 'update']);
+        Route::delete('/scheduled-reports/{scheduled_report}', [ScheduledReportController::class, 'destroy']);
 
         Route::apiResource('services', ServiceController::class)->except(['index', 'show']);
         Route::get('/services/{service}/checklist', [JobEnhancementController::class, 'checklistItems']);

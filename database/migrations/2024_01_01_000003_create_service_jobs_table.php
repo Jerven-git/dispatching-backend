@@ -32,11 +32,15 @@ return new class extends Migration
             $table->timestamp('completed_at')->nullable();
             $table->timestamp('cancelled_at')->nullable();
             $table->text('technician_notes')->nullable();
+            $table->string('signature_path')->nullable();
+            $table->string('signed_by_name')->nullable();
+            $table->timestamp('signed_at')->nullable();
             $table->decimal('total_cost', 10, 2)->nullable();
             $table->enum('recurring_frequency', ['none', 'daily', 'weekly', 'biweekly', 'monthly'])->default('none');
             $table->date('recurring_end_date')->nullable();
             $table->unsignedBigInteger('parent_job_id')->nullable();
             $table->timestamps();
+            $table->softDeletes();
 
             $table->foreign('parent_job_id')->references('id')->on('service_jobs')->nullOnDelete();
             $table->index('status');

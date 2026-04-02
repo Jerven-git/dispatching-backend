@@ -33,6 +33,8 @@ class ServiceJobResource extends JsonResource
             'signature_path' => $this->signature_path,
             'signed_by_name' => $this->signed_by_name,
             'signed_at' => $this->signed_at,
+            'latitude' => $this->latitude,
+            'longitude' => $this->longitude,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
             'status_logs' => JobStatusLogResource::collection($this->whenLoaded('statusLogs')),

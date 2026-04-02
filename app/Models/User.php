@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -35,6 +36,16 @@ class User extends Authenticatable
     public function createdJobs(): HasMany
     {
         return $this->hasMany(ServiceJob::class, 'created_by');
+    }
+
+    public function locations(): HasMany
+    {
+        return $this->hasMany(TechnicianLocation::class)->orderByDesc('recorded_at');
+    }
+
+    public function latestLocation(): HasOne
+    {
+        return $this->hasOne(TechnicianLocation::class)->latestOfMany('recorded_at');
     }
 
     public function isAdmin(): bool

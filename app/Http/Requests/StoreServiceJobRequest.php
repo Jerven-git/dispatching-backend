@@ -27,6 +27,8 @@ class StoreServiceJobRequest extends FormRequest
             'total_cost' => ['nullable', 'numeric', 'min:0'],
             'recurring_frequency' => ['sometimes', 'in:none,daily,weekly,biweekly,monthly'],
             'recurring_end_date' => ['nullable', 'date', 'after:scheduled_date'],
+            'latitude' => ['nullable', 'numeric', 'between:-90,90'],
+            'longitude' => ['nullable', 'numeric', 'between:-180,180'],
             'force' => ['nullable', 'boolean'],
         ];
     }

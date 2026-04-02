@@ -36,6 +36,8 @@ return new class extends Migration
             $table->string('signed_by_name')->nullable();
             $table->timestamp('signed_at')->nullable();
             $table->decimal('total_cost', 10, 2)->nullable();
+            $table->decimal('latitude', 10, 7)->nullable();
+            $table->decimal('longitude', 10, 7)->nullable();
             $table->enum('recurring_frequency', ['none', 'daily', 'weekly', 'biweekly', 'monthly'])->default('none');
             $table->date('recurring_end_date')->nullable();
             $table->unsignedBigInteger('parent_job_id')->nullable();

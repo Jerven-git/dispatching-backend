@@ -128,4 +128,9 @@ class ServiceJob extends Model
     {
         return $this->hasMany(Invoice::class);
     }
+
+    public function parts(): HasMany
+    {
+        return $this->hasMany(JobPart::class);
+    }
 }

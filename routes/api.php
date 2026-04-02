@@ -8,6 +8,8 @@ use App\Http\Controllers\Api\JobEnhancementController;
 use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\Portal\CustomerAuthController;
 use App\Http\Controllers\Api\Portal\CustomerPortalController;
+use App\Http\Controllers\Api\JobPartController;
+use App\Http\Controllers\Api\PartController;
 use App\Http\Controllers\Api\ReportController;
 use App\Http\Controllers\Api\RouteController;
 use App\Http\Controllers\Api\ServiceController;
@@ -42,6 +44,12 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/comments', [JobEnhancementController::class, 'comments']);
         Route::post('/comments', [JobEnhancementController::class, 'storeComment']);
         Route::delete('/comments/{comment}', [JobEnhancementController::class, 'deleteComment']);
+
+        // Job parts (all roles — authorization handled contextually)
+        Route::get('/parts', [JobPartController::class, 'index']);
+        Route::post('/parts', [JobPartController::class, 'store']);
+        Route::put('/parts/{part}', [JobPartController::class, 'update']);
+        Route::delete('/parts/{part}', [JobPartController::class, 'destroy']);
     });
 
     // Notifications (all roles)
@@ -86,6 +94,11 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/reports/jobs-by-date', [ReportController::class, 'jobsByDate']);
         Route::get('/reports/technician-performance', [ReportController::class, 'technicianPerformance']);
 
+        // Inventory & Parts
+        Route::get('/parts', [PartController::class, 'index']);
+        Route::get('/parts/low-stock', [PartController::class, 'lowStock']);
+        Route::get('/parts/{part}', [PartController::class, 'show']);
+
         // Field Operations — GPS & Routing
         Route::get('/technicians/locations', [TechnicianLocationController::class, 'index']);
         Route::get('/technicians/{technician}/location', [TechnicianLocationController::class, 'show']);
@@ -95,6 +108,12 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Admin-only routes
     Route::middleware('role:admin')->group(function () {
+        // Parts catalog management
+        Route::post('/parts', [PartController::class, 'store']);
+        Route::put('/parts/{part}', [PartController::class, 'update']);
+        Route::delete('/parts/{part}', [PartController::class, 'destroy']);
+        Route::post('/parts/{part}/adjust-stock', [PartController::class, 'adjustStock']);
+
         Route::apiResource('services', ServiceController::class)->except(['index', 'show']);
         Route::get('/services/{service}/checklist', [JobEnhancementController::class, 'checklistItems']);
         Route::post('/services/{service}/checklist', [JobEnhancementController::class, 'storeChecklistItem']);

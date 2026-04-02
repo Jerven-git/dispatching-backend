@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CustomerController;
 use App\Http\Controllers\Api\DashboardController;
+use App\Http\Controllers\Api\InvoiceController;
 use App\Http\Controllers\Api\JobEnhancementController;
 use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\ReportController;
@@ -57,6 +58,16 @@ Route::middleware('auth:sanctum')->group(function () {
         // Services (read-only for dispatchers)
         Route::get('/services', [ServiceController::class, 'index']);
         Route::get('/services/{service}', [ServiceController::class, 'show']);
+
+        // Invoices
+        Route::get('/invoices', [InvoiceController::class, 'index']);
+        Route::get('/invoices/{invoice}', [InvoiceController::class, 'show']);
+        Route::post('/service-jobs/{service_job}/invoice', [InvoiceController::class, 'generate']);
+        Route::put('/invoices/{invoice}', [InvoiceController::class, 'update']);
+        Route::patch('/invoices/{invoice}/paid', [InvoiceController::class, 'markAsPaid']);
+        Route::patch('/invoices/{invoice}/sent', [InvoiceController::class, 'markAsSent']);
+        Route::get('/invoices/{invoice}/pdf', [InvoiceController::class, 'downloadPdf']);
+        Route::delete('/invoices/{invoice}', [InvoiceController::class, 'destroy']);
 
         // Reports
         Route::get('/reports/summary', [ReportController::class, 'summary']);

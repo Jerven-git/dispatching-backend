@@ -119,4 +119,9 @@ class ServiceJob extends Model
     {
         return $this->hasMany(JobComment::class)->orderBy('created_at');
     }
+
+    public function invoices(): HasMany
+    {
+        return $this->hasMany(Invoice::class);
+    }
 }

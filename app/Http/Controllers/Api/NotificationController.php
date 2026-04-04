@@ -14,14 +14,16 @@ class NotificationController extends Controller
             ->notifications()
             ->paginate($request->per_page ?? 20);
 
+        $notifications->through(fn ($n) => [
+            'id' => $n->id,
+            'type' => class_basename($n->type),
+            'data' => $n->data,
+            'read_at' => $n->read_at,
+            'created_at' => $n->created_at,
+        ]);
+
         return response()->json([
-            'data' => $notifications->through(fn ($n) => [
-                'id' => $n->id,
-                'type' => class_basename($n->type),
-                'data' => $n->data,
-                'read_at' => $n->read_at,
-                'created_at' => $n->created_at,
-            ]),
+            'data' => $notifications->items(),
             'meta' => [
                 'current_page' => $notifications->currentPage(),
                 'last_page' => $notifications->lastPage(),

@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-#[Fillable(['name', 'email', 'phone', 'password', 'role', 'is_active'])]
+#[Fillable(['name', 'email', 'phone', 'password', 'role', 'is_active', 'tenant_id', 'custom_role_id'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
@@ -36,6 +36,54 @@ class User extends Authenticatable
     public function createdJobs(): HasMany
     {
         return $this->hasMany(ServiceJob::class, 'created_by');
+    }
+
+    public function tenant(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(Tenant::class);
+    }
+
+    public function customRole(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(Role::class, 'custom_role_id');
+    }
+
+    public function hasPermission(string $slug): bool
+    {
+        // Admins have all permissions
+        if ($this->isAdmin()) {
+            return true;
+        }
+
+        // Check custom role permissions if assigned
+        if ($this->custom_role_id && $this->customRole) {
+            return $this->customRole->hasPermission($slug);
+        }
+
+        // Fall back to default role permissions
+        return $this->getDefaultPermissions()->contains($slug);
+    }
+
+    private function getDefaultPermissions(): \Illuminate\Support\Collection
+    {
+        return match ($this->role) {
+            'admin' => collect(['*']),
+            'dispatcher' => collect([
+                'jobs.view', 'jobs.create', 'jobs.update', 'jobs.assign',
+                'customers.view', 'customers.create', 'customers.update',
+                'invoices.view', 'invoices.create', 'invoices.update',
+                'parts.view',
+                'reports.view', 'reports.export',
+                'analytics.view',
+                'users.view',
+                'services.view',
+            ]),
+            'technician' => collect([
+                'jobs.view', 'jobs.update',
+                'parts.view',
+            ]),
+            default => collect([]),
+        };
     }
 
     public function locations(): HasMany

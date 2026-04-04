@@ -13,8 +13,14 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->statefulApi();
+        $middleware->appendToGroup('api', [
+            \App\Http\Middleware\ResolveTenant::class,
+            \App\Http\Middleware\TenantRateLimiter::class,
+        ]);
         $middleware->alias([
             'role' => \App\Http\Middleware\EnsureRole::class,
+            'permission' => \App\Http\Middleware\CheckPermission::class,
+            'tenant' => \App\Http\Middleware\ResolveTenant::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

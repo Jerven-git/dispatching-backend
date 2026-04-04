@@ -9,6 +9,9 @@ use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\Portal\CustomerAuthController;
 use App\Http\Controllers\Api\Portal\CustomerPortalController;
 use App\Http\Controllers\Api\AnalyticsController;
+use App\Http\Controllers\Api\AuditLogController;
+use App\Http\Controllers\Api\RoleController;
+use App\Http\Controllers\Api\TenantController;
 use App\Http\Controllers\Api\ExportController;
 use App\Http\Controllers\Api\JobPartController;
 use App\Http\Controllers\Api\PartController;
@@ -129,6 +132,21 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/parts/{part}', [PartController::class, 'update']);
         Route::delete('/parts/{part}', [PartController::class, 'destroy']);
         Route::post('/parts/{part}/adjust-stock', [PartController::class, 'adjustStock']);
+
+        // Tenants (super-admin)
+        Route::apiResource('tenants', TenantController::class);
+
+        // Roles & Permissions
+        Route::get('/roles', [RoleController::class, 'index']);
+        Route::post('/roles', [RoleController::class, 'store']);
+        Route::get('/roles/{role}', [RoleController::class, 'show']);
+        Route::put('/roles/{role}', [RoleController::class, 'update']);
+        Route::delete('/roles/{role}', [RoleController::class, 'destroy']);
+        Route::get('/permissions', [RoleController::class, 'permissions']);
+
+        // Audit Logs
+        Route::get('/audit-logs', [AuditLogController::class, 'index']);
+        Route::get('/audit-logs/{audit_log}', [AuditLogController::class, 'show']);
 
         // Scheduled Reports
         Route::get('/scheduled-reports', [ScheduledReportController::class, 'index']);

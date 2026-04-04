@@ -15,7 +15,7 @@ class TenantController extends Controller
             ->orderBy('name')
             ->get();
 
-        return response()->json(['tenants' => $tenants]);
+        return response()->json(['data' => $tenants]);
     }
 
     public function store(Request $request): JsonResponse
@@ -42,7 +42,7 @@ class TenantController extends Controller
         $tenant->loadCount('users');
         $tenant->load('roles');
 
-        return response()->json(['tenant' => $tenant]);
+        return response()->json(['data' => $tenant]);
     }
 
     public function update(Request $request, Tenant $tenant): JsonResponse

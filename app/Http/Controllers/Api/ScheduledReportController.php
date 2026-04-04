@@ -15,7 +15,7 @@ class ScheduledReportController extends Controller
             ->orderByDesc('created_at')
             ->get();
 
-        return response()->json(['scheduled_reports' => $reports]);
+        return response()->json(['data' => $reports]);
     }
 
     public function store(Request $request): JsonResponse

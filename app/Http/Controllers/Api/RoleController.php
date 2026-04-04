@@ -24,7 +24,7 @@ class RoleController extends Controller
 
         $roles = $query->orderBy('name')->get();
 
-        return response()->json(['roles' => $roles]);
+        return response()->json(['data' => $roles]);
     }
 
     public function store(Request $request): JsonResponse
@@ -132,9 +132,8 @@ class RoleController extends Controller
     {
         $permissions = Permission::orderBy('group')
             ->orderBy('name')
-            ->get()
-            ->groupBy('group');
+            ->get();
 
-        return response()->json(['permissions' => $permissions]);
+        return response()->json(['data' => $permissions]);
     }
 }

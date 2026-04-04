@@ -21,7 +21,7 @@ class AnalyticsController extends Controller
         ]);
 
         return response()->json([
-            'trend' => $this->analyticsService->getRevenueTrend(
+            'data' => $this->analyticsService->getRevenueTrend(
                 $request->from,
                 $request->to,
             ),
@@ -36,7 +36,7 @@ class AnalyticsController extends Controller
         ]);
 
         return response()->json([
-            'trend' => $this->analyticsService->getJobTrend(
+            'data' => $this->analyticsService->getJobTrend(
                 $request->from,
                 $request->to,
             ),
@@ -51,7 +51,7 @@ class AnalyticsController extends Controller
         ]);
 
         return response()->json([
-            'services' => $this->analyticsService->getServicePopularity(
+            'data' => $this->analyticsService->getServicePopularity(
                 $request->from,
                 $request->to,
             ),
@@ -65,7 +65,7 @@ class AnalyticsController extends Controller
         ]);
 
         return response()->json([
-            'customers' => $this->analyticsService->getCustomerLifetimeValue(
+            'data' => $this->analyticsService->getCustomerLifetimeValue(
                 $request->integer('limit', 20),
             ),
         ]);
@@ -80,7 +80,7 @@ class AnalyticsController extends Controller
         ]);
 
         return response()->json([
-            'jobs' => $this->analyticsService->getJobProfitability(
+            'data' => $this->analyticsService->getJobProfitability(
                 $request->from,
                 $request->to,
                 $request->integer('limit', 50),

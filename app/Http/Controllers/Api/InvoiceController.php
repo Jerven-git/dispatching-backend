@@ -123,6 +123,9 @@ class InvoiceController extends Controller
     {
         $invoice->update(['status' => 'sent']);
 
+        // Send email notification to customer
+        app(\App\Services\NotificationService::class)->notifyInvoiceSent($invoice);
+
         return response()->json([
             'message' => 'Invoice marked as sent.',
             'invoice' => new InvoiceResource($invoice),

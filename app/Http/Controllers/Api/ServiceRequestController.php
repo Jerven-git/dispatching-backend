@@ -60,6 +60,8 @@ class ServiceRequestController extends Controller
             'admin_notes' => $data['admin_notes'] ?? null,
         ]);
 
+        app(\App\Services\NotificationService::class)->notifyServiceRequestUpdate($serviceRequest);
+
         return response()->json([
             'message' => 'Request approved and job created.',
             'job_id' => $job->id,
@@ -81,6 +83,8 @@ class ServiceRequestController extends Controller
             'status' => 'declined',
             'admin_notes' => $data['admin_notes'] ?? null,
         ]);
+
+        app(\App\Services\NotificationService::class)->notifyServiceRequestUpdate($serviceRequest);
 
         return response()->json(['message' => 'Request declined.']);
     }

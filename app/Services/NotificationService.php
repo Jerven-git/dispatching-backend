@@ -2,9 +2,14 @@
 
 namespace App\Services;
 
+use App\Models\Invoice;
 use App\Models\ServiceJob;
+use App\Models\ServiceRequest;
 use App\Models\User;
+use App\Notifications\CustomerInvoiceSent;
+use App\Notifications\CustomerJobAssigned;
 use App\Notifications\CustomerJobUpdate;
+use App\Notifications\CustomerServiceRequestUpdate;
 use App\Notifications\JobAssigned;
 use App\Notifications\JobStatusChanged;
 
@@ -21,6 +26,11 @@ class NotificationService
 
         $job->loadMissing(['customer', 'service']);
         $job->technician->notify(new JobAssigned($job));
+
+        // Notify customer that a technician has been assigned
+        if ($job->customer->email) {
+            $job->customer->notify(new CustomerJobAssigned($job));
+        }
     }
 
     /**
@@ -43,6 +53,30 @@ class NotificationService
         // Notify assigned technician if dispatcher/admin changes their job status
         if ($job->technician && $job->technician->id !== $changedBy->id) {
             $job->technician->notify(new JobStatusChanged($job, $oldStatus, $newStatus, $changedBy->name));
+        }
+    }
+
+    /**
+     * Notify customer when an invoice is sent.
+     */
+    public function notifyInvoiceSent(Invoice $invoice): void
+    {
+        $invoice->loadMissing('customer');
+        if ($invoice->customer->email) {
+            $invoice->customer->notify(new CustomerInvoiceSent($invoice));
+        }
+    }
+
+    /**
+     * Notify customer when their service request is approved/declined.
+     */
+    public function notifyServiceRequestUpdate(ServiceRequest $serviceRequest): void
+    {
+        $serviceRequest->loadMissing(['customer', 'service']);
+        if ($serviceRequest->customer->email) {
+            $serviceRequest->customer->notify(
+                new CustomerServiceRequestUpdate($serviceRequest, $serviceRequest->status)
+            );
         }
     }
 

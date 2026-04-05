@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CustomerController;
 use App\Http\Controllers\Api\DashboardController;
+use App\Http\Controllers\Api\HealthController;
 use App\Http\Controllers\Api\InvoiceController;
 use App\Http\Controllers\Api\JobEnhancementController;
 use App\Http\Controllers\Api\NotificationController;
@@ -25,6 +26,9 @@ use App\Http\Controllers\Api\SyncController;
 use App\Http\Controllers\Api\TechnicianLocationController;
 use App\Http\Controllers\Api\UserController;
 use Illuminate\Support\Facades\Route;
+
+// Health check
+Route::get('/health', HealthController::class);
 
 // Public routes
 Route::post('/login', [AuthController::class, 'login'])
